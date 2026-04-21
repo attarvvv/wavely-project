@@ -1,179 +1,113 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Music2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = async () => {
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
     setError("");
-    setSuccess("");
-
-    if (password !== confirmPassword) {
-      setError("Password tidak cocok.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password minimal 6 karakter.");
-      return;
-    }
-
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+      },
+    });
 
     setLoading(false);
 
     if (error) {
       setError(error.message);
     } else {
-      setSuccess("Akun berhasil dibuat! Cek email kamu untuk verifikasi.");
+      // Sign out dulu supaya user harus login manual
+      await supabase.auth.signOut();
+      router.push("/login");
     }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleRegister();
-  };
+  }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-black via-[#050510] to-black text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-black via-[#050510] to-black flex items-center justify-center px-4 relative">
+      <div className="absolute top-0 left-1/2 w-[400px] h-[400px] -translate-x-1/2 bg-blue-500/20 blur-[120px] pointer-events-none" />
 
-      {/* Glow */}
-      <div className="absolute top-0 left-1/2 w-[500px] h-[500px] -translate-x-1/2 bg-blue-500/30 blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-400/20 blur-[120px] pointer-events-none" />
-
-      {/* Card */}
-      <div className="relative z-10 w-[340px] rounded-2xl bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)]">
-
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-2 mb-7">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)]">
-            <Music2 size={20} className="text-white" />
-          </div>
-          <div className="text-center">
-            <h1 className="text-xl font-semibold tracking-tight">Create account</h1>
-            <p className="text-sm text-white/45 mt-0.5">Join and start listening</p>
-          </div>
+      <div className="w-full max-w-sm z-10">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-medium text-white tracking-tight">
+            🎧 <span className="text-blue-400">Wavely</span>
+          </h1>
+          <p className="text-sm text-white/40 mt-2">Create your account</p>
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="mb-4 px-3.5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-            {error}
-          </div>
-        )}
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6">
+          <form onSubmit={handleRegister} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-white/50">Full name</label>
+              <input
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-blue-500/50 transition"
+              />
+            </div>
 
-        {/* Success */}
-        {success && (
-          <div className="mb-4 px-3.5 py-2.5 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-            {success}
-          </div>
-        )}
-
-        {/* Fields */}
-        {!success && (
-          <div className="space-y-3 mb-5">
-            <div>
-              <label className="block text-[11px] font-medium uppercase tracking-wide text-white/50 mb-1.5">Email</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-white/50">Email</label>
               <input
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={loading}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-black/45 border border-white/12 text-white text-sm placeholder:text-white/25 outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/15 transition disabled:opacity-50"
+                required
+                className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-blue-500/50 transition"
               />
             </div>
 
-            <div>
-              <label className="block text-[11px] font-medium uppercase tracking-wide text-white/50 mb-1.5">Password</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-white/50">Password</label>
               <input
                 type="password"
-                placeholder="Min. 6 karakter"
+                placeholder="Min. 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={loading}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-black/45 border border-white/12 text-white text-sm placeholder:text-white/25 outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/15 transition disabled:opacity-50"
+                required
+                className="bg-white/[0.06] border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-blue-500/50 transition"
               />
             </div>
 
-            <div>
-              <label className="block text-[11px] font-medium uppercase tracking-wide text-white/50 mb-1.5">Confirm Password</label>
-              <input
-                type="password"
-                placeholder="Ulangi password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={loading}
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-black/45 border text-white text-sm placeholder:text-white/25 outline-none focus:ring-2 transition disabled:opacity-50 ${
-                  confirmPassword && confirmPassword !== password
-                    ? "border-red-500/40 focus:border-red-500/60 focus:ring-red-500/15"
-                    : confirmPassword && confirmPassword === password
-                    ? "border-green-500/40 focus:border-green-500/60 focus:ring-green-500/15"
-                    : "border-white/12 focus:border-blue-500/60 focus:ring-blue-500/15"
-                }`}
-              />
-              {confirmPassword && confirmPassword !== password && (
-                <p className="text-xs text-red-400/80 mt-1.5 ml-1">Password tidak cocok</p>
-              )}
-              {confirmPassword && confirmPassword === password && (
-                <p className="text-xs text-green-400/80 mt-1.5 ml-1">Password cocok ✓</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {!success ? (
-          <button
-            onClick={handleRegister}
-            disabled={loading || !email || !password || !confirmPassword}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-sm font-semibold shadow-[0_4px_15px_rgba(59,130,246,0.35)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.5)] hover:-translate-y-px active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                </svg>
-                Creating account...
-              </span>
-            ) : (
-              "Create account"
+            {error && (
+              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                {error}
+              </p>
             )}
-          </button>
-        ) : (
-          <button
-            onClick={() => router.push("/login")}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-sm font-semibold shadow-[0_4px_15px_rgba(59,130,246,0.35)] hover:-translate-y-px active:scale-[0.98] transition"
-          >
-            Go to Login
-          </button>
-        )}
 
-        <div className="flex items-center gap-2.5 my-4">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-xs text-white/30">or</span>
-          <div className="flex-1 h-px bg-white/10" />
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl py-2.5 transition mt-1"
+            >
+              {loading ? "Creating account..." : "Create account"}
+            </button>
+          </form>
         </div>
 
-        <p className="text-center text-xs text-white/40">
+        <p className="text-center text-xs text-white/30 mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-300/85 hover:text-blue-300 transition">
+          <Link href="/login" className="text-blue-400 hover:text-blue-300 transition">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
