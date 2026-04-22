@@ -33,3 +33,5 @@ function PlayerWrapper() {
   const { currentSong } = usePlayer();
   return <Player key="global-player" song={currentSong} />;
 }
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />

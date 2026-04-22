@@ -27,7 +27,7 @@ export default function LibraryPage() {
     <div className="flex min-h-screen text-white bg-black">
       <Sidebar createPlaylist={() => {}} playlists={playlists} />
 
-      <div className="flex-1 p-8 ml-[220px]">
+      <div className="flex-1 p-6 md:p-8 md:ml-[220px] pb-24 md:pb-8">
         <h1 className="text-xl font-semibold mb-6 text-white/80">My Library</h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">

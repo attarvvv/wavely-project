@@ -123,7 +123,7 @@ export default function ProfilePage() {
     <div className="flex min-h-screen text-white bg-black">
       <Sidebar createPlaylist={() => {}} playlists={allPlaylists} />
 
-      <div className="flex-1 ml-[220px] relative">
+      <div className="flex-1 md:ml-[220px] relative pb-20 md:pb-0">
 
         {/* Banner */}
         <div className="h-52 w-full relative overflow-hidden">

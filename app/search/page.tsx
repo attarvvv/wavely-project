@@ -143,7 +143,7 @@ export default function SearchPage() {
     <div className="flex min-h-screen text-white bg-black">
       <Sidebar createPlaylist={() => {}} playlists={allPlaylists} />
 
-      <div className="flex-1 ml-[220px] px-10 py-8">
+      <div className="flex-1 md:ml-[220px] px-4 md:px-10 py-6 md:py-8 pb-24 md:pb-8">
 
         {/* Search bar */}
         <div className="relative mb-8 max-w-xl">
