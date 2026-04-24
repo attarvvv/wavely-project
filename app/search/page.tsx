@@ -65,9 +65,9 @@ export default function SearchPage() {
 
     const [songsRes, artistsRes, usersRes] = await Promise.all([
       supabase
-        .from("songs")
+        .from("profiles")
         .select("*")
-        .ilike("title", `%${q}%`)
+        .or(`username.ilike.%${q}%,full_name.ilike.%${q}%`)
         .limit(20),
       supabase
         .from("songs")
